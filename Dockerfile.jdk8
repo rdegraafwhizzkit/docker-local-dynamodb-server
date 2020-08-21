@@ -1,0 +1,9 @@
+# Delete image
+# docker image rm "jdk8:latest"
+
+# Build image
+# docker build --no-cache -t jdk8 -f Dockerfile.jdk8 .
+
+FROM   debian:9.12
+RUN    apt-get update && \
+       apt-get install -y openjdk-8-jdk-headless maven
