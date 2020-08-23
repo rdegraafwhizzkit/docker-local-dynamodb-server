@@ -13,6 +13,9 @@
 # Remove all stopped containers
 # docker container prune
 
+# Remove all unused images
+# docker image prune -a
+
 FROM   jdk8:latest
 
 ARG    dynamodb_version=1.12.0
