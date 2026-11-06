@@ -5,6 +5,12 @@ from lib import DynamoDBTable
 
 class FloatingDayTable(DynamoDBTable):
     def __init__(self, table_name, client=None):
+        """
+        Class constructor
+
+        :param table_name: DynamoDB table name
+        :param client: Boto3 client
+        """
         super().__init__(table_name, client)
 
     def get_item(self, yyyymmdd: int) -> dict | None:
@@ -13,10 +19,10 @@ class FloatingDayTable(DynamoDBTable):
             Key={'yyyymmdd': {'N': str(yyyymmdd)}}
         ).get('Item', None)
 
-    def update_attributes(self, item: dict) -> dict:
+    def update_item_attributes(self, item: dict) -> dict:
         employee_ids_count = len(item.get('employee_ids', {}).get('SS', []))
         if 0 == employee_ids_count:
-            # Empty lists not allowed
+            # Empty lists not allowed in DynamoDB
             item.pop('employee_ids', None)
 
         return item | {
@@ -36,6 +42,14 @@ class FloatingDayTable(DynamoDBTable):
         self.put_item(existing, **kwargs)
 
     def remove_employee_ids_from_day(self, yyyymmdd: int, employee_ids: str | list, **kwargs):
+        """
+        Remove employee id(s) from the employee_ids attribute
+
+        :param yyyymmdd: A value like 20160413 for July 4th, 2020
+        :param employee_ids: String or string list with employee id(s) to remove
+        :param kwargs: Extra arguments to put_item
+        :return: None
+        """
         existing = self.get_item(yyyymmdd)
         if not existing:
             return
@@ -75,7 +89,7 @@ class FloatingDayTable(DynamoDBTable):
         :param yyyymmdd: a value like 20261105 for November 5th, 2026
         :return: yield
         """
-        # query works on the partition key, will return one item, if any
+        # query works on the partition key, will return one partition key item, if any
         for page in self.client.get_paginator('query').paginate(
                 TableName=self.table_name,
                 KeyConditionExpression='yyyymmdd = :yyyymmdd',
@@ -103,6 +117,11 @@ class FloatingDayTable(DynamoDBTable):
             yield from page['Items']
 
     def __enter__(self):
+        """
+        Enter the context manager
+
+        :return: This object
+        """
         try:
             self.create_table(
                 [{'AttributeName': 'yyyymmdd', 'AttributeType': 'N'}],
@@ -114,5 +133,12 @@ class FloatingDayTable(DynamoDBTable):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        # Pass
+        """
+        Exit the context manager
+
+        :param exc_type:
+        :param exc_val:
+        :param exc_tb:
+        :return: None
+        """
         pass
