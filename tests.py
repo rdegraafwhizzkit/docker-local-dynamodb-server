@@ -1,7 +1,8 @@
-import unittest
-import boto3
 from lib.floating_day import FloatingDayTable, DynamoDBTable
+import boto3
 import datetime
+import os
+import unittest
 
 
 class TestFloatingDayTable(unittest.TestCase):
@@ -14,7 +15,7 @@ class TestFloatingDayTable(unittest.TestCase):
             region_name='eu-west-1'  # noqa is a dummy value but must be a valid AWS region
         ).client(
             'dynamodb',
-            endpoint_url='http://localhost:8000'
+            endpoint_url=os.environ.get('ENDPOINT_URL', 'http://localhost:8000')
         )
 
         cls.table_name = 'floating_day_zob'

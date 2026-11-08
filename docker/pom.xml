@@ -9,8 +9,6 @@
     <version>1.0</version>
 
     <properties>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.compiler.source>1.8</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -29,15 +27,28 @@
             <version>${dynamodb.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.almworks.sqlite4java</groupId>
-            <artifactId>libsqlite4java-osx</artifactId>
+            <groupId>io.github.luneo7</groupId>
+            <artifactId>libsqlite4java-linux-aarch64</artifactId>
             <version>${sqlite4java.version}</version>
-            <type>dylib</type>
+            <scope>runtime</scope>
+            <type>so</type>
         </dependency>
     </dependencies>
 
     <build>
         <sourceDirectory>./</sourceDirectory>
         <finalName>${project.artifactId}-${dynamodb.version}</finalName>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.16.0</version>
+                    <configuration>
+                        <release>17</release>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 </project>
